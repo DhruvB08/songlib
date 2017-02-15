@@ -1,0 +1,40 @@
+package SongLib.view;
+
+import javafx.scene.control.TextField;
+
+public class Songs {
+		 String song;
+		 String artist;
+		 String album;
+		 String year;
+		 
+		 //constructor
+		public Songs(String song_temp, String artist_temp, String album_temp, String year_temp){
+				song = song_temp;
+				artist = artist_temp;
+				album = album_temp;
+				year = year_temp; 
+		}
+		
+		
+		//return information about the Song
+		public String getSong(){
+			return song;
+			
+		}
+		
+		public String getArtist(){
+			return artist;
+			
+		}
+		
+		public String getAlbum(){
+			return album;
+			
+		}
+		
+		public String getYear(){
+			return year;
+			
+		}
+}
