@@ -42,6 +42,7 @@ public class SongLib extends Application {
 			
 			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
+			primaryStage.setResizable(false);
 			primaryStage.show();	
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -56,7 +57,7 @@ public class SongLib extends Application {
 				String[] token = input.nextLine().split("/");
 				for(int i = 0; i < 4; i++){
 					if(token[i] == null){
-						token[i] = "";
+						token[i] = " ";
 					}
 				} 
 				
@@ -100,6 +101,13 @@ public class SongLib extends Application {
 					artist = " ";
 					album = " ";
 					year = " ";
+				} else{
+					if(album.equals("")){
+						album = " ";
+					}
+					if(year.equals("")){
+						year = " ";
+					}
 				}
 								
 				song = songName+"/"+artist+"/"+album+"/"+year;
