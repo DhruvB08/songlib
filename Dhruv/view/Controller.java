@@ -8,13 +8,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.*;
-import javafx.scene.layout.GridPane;
 import javafx.collections.*;
 import javafx.stage.Stage;
 
 public class Controller {
 	
 	@FXML ListView<String> songListView;
+	@FXML TextField addSong;
+	@FXML TextField addArtist;
+	@FXML TextField addAlbum;
+	@FXML TextField addYear;
 	@FXML TextField displaySong;
 	@FXML TextField displayArtist;
 	@FXML TextField displayAlbum;
@@ -109,81 +112,53 @@ public class Controller {
 	 }
 	
 	public void addButtonClicked(ActionEvent e){ 
-		songListView.getSelectionModel().clearSelection();
-		Dialog<ButtonType> dialog = new Dialog<ButtonType>();
-		dialog.setTitle("Add New Song");
-		dialog.setHeaderText("Enter song details.");
+		String song = addSong.getText();
+		String artist = addArtist.getText();
+		String album = addAlbum.getText();
+		String year = addYear.getText();
 		
-		Label songLabel = new Label("Song: ");
-		Label artistLabel = new Label("Artist: ");
-		Label albumLabel = new Label("Album: ");
-		Label yearLabel = new Label("Year: ");
-		
-		TextField songField = new TextField();
-		TextField artistField = new TextField();
-		TextField albumField = new TextField();
-		TextField yearField = new TextField();
-
-		GridPane gridpane = new GridPane();
-		gridpane.add(songLabel, 0, 0);
-		gridpane.add(artistLabel, 0, 1);
-		gridpane.add(albumLabel, 0, 2);
-		gridpane.add(yearLabel, 0, 3);
-		
-		gridpane.add(songField, 1, 0);
-		gridpane.add(artistField, 1, 1);
-		gridpane.add(albumField, 1, 2);
-		gridpane.add(yearField, 1, 3);
-		
-		dialog.getDialogPane().setGraphic(gridpane);
-		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		
-		Optional<ButtonType> result = dialog.showAndWait();
-		
-		if(result.get() == ButtonType.OK){
-			String song = songField.getText();
-			String artist = artistField.getText();
-			String album = albumField.getText();
-			String year = yearField.getText();
-			
-			if(song.equals("") || song == null || artist.equals("") || artist == null){
-				moreInput();
-				return;
-			}
-			
-			int indexOfSong = searchForSong(songs, song, artist);
-			if (indexOfSong == -1) {
-				Song newSong = new Song(song, artist, album, year);
-				for(int i = 0; i < songs.size(); i++){
-					songs.get(i).setFirstSong(false);
-				}
-				newSong.setFirstSong(true);
-				songs.add(newSong);
-				Collections.sort(songs, new CustomComparator());
-				obsList.clear();
-				int index = 0;
-				for(int i = 0; i < songs.size(); i++){
-					obsList.add(songs.get(i).getSongName());
-				}
-				for(int i = 0; i < songs.size(); i++){
-					if(songs.get(i).getFirstSong()){
-						index = i;
-					}
-				}
-				songListView.getSelectionModel().clearAndSelect(index);
-				displaySong(songs, index);
-				FXCollections.sort(obsList, String.CASE_INSENSITIVE_ORDER);
-			} else {
-				sameSong();
-				return;
-			}
+		if(song.equals("") || song == null || artist.equals("") || artist == null){
+			moreInput();
+			return;
 		}
 		
-		return;	
+		int indexOfSong = searchForSong(songs, song, artist);
+		if (indexOfSong == -1) {
+			Song newSong = new Song(song, artist, album, year);
+			for(int i = 0; i < songs.size(); i++){
+				songs.get(i).setFirstSong(false);
+			}
+			newSong.setFirstSong(true);
+			songs.add(newSong);
+			Collections.sort(songs, new CustomComparator());
+			obsList.clear();
+			int index = 0;
+			for(int i = 0; i < songs.size(); i++){
+				obsList.add(songs.get(i).getSongName());
+			}
+			for(int i = 0; i < songs.size(); i++){
+				if(songs.get(i).getFirstSong()){
+					index = i;
+				}
+			}
+			songListView.getSelectionModel().clearAndSelect(index);
+			displaySong(songs, index);
+			FXCollections.sort(obsList, String.CASE_INSENSITIVE_ORDER);
+		} else {
+			sameSong();
+			return;
+		}
 	}
 	
 	public void editButtonClicked(ActionEvent e){ 
-		editOrNot(true);
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Confirm Edit");
+		alert.setHeaderText("Really change this song?");
+		Optional<ButtonType> result = alert.showAndWait();
+		
+		if(result.get() == ButtonType.OK){
+			confirmEditClicked(e);
+		}
 	}
 	
 	public void deleteButtonClicked(ActionEvent e){ 
@@ -259,7 +234,7 @@ public class Controller {
 		Collections.sort(songs, new CustomComparator());
 		FXCollections.sort(obsList);
 		
-		editOrNot(false);
+		editOrNot(true);
 	}
 	
 	public void cancelEditClicked(ActionEvent e){ 
@@ -267,7 +242,7 @@ public class Controller {
 			return;
 		}
 		
-		editOrNot(false);
+		editOrNot(true);
 		displaySong.setText(songs.get(0).getSongName());
 		displayArtist.setText(songs.get(0).getArtistName());
 		displayAlbum.setText(songs.get(0).getAlbumName());
